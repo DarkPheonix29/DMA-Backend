@@ -7,4 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DMA-BLL\DMA-BLL.csproj" />
+  </ItemGroup>
+
 </Project>
