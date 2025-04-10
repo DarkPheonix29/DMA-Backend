@@ -1,4 +1,4 @@
-namespace DMA_BLL
+namespace DMA_BLL.Models
 {
 	public class Table
 	{

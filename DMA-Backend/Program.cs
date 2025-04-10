@@ -15,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Register repository interfaces and implementations
 builder.Services.AddScoped<IDishRepos, DishRepos>();
-builder.Services.AddScoped<ITableRepository, TableRepository>();
+builder.Services.AddScoped<ITableRepos, TableRepos>();
 
 // Register BLL services
 builder.Services.AddScoped<TableServices>();

@@ -17,5 +17,6 @@ namespace DMA_DAL
 
 		// Define your DbSets here
 		public DbSet<Dish> Dishes { get; set; }
+		public DbSet<Table> Tables { get; set; }
 	}
 }

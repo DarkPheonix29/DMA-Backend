@@ -1,9 +1,9 @@
-using DMA_BLL;
 using DMA_BLL.Interfaces;
+using DMA_BLL.Models;
 
-namespace DMA_DAL
+namespace DMA_DAL.Repos
 {
-	public class TableRepos : ITableRepository
+	public class TableRepos : ITableRepos
 	{
 		private static readonly List<Table> _tables = new();
 		private static int _nextId = 1;

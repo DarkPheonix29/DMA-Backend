@@ -1,13 +1,14 @@
 using DMA_BLL.Interfaces;
+using DMA_BLL.Models;
 
 namespace DMA_BLL
 {
 	public class TableServices
 	{
-		private readonly ITableRepository _tableRepository;
+		private readonly ITableRepos _tableRepository;
 		private readonly QrCodeService _qrCodeService;
 
-		public TableServices(ITableRepository tableRepository, QrCodeService qrCodeService)
+		public TableServices(ITableRepos tableRepository, QrCodeService qrCodeService)
 		{
 			_tableRepository = tableRepository;
 			_qrCodeService = qrCodeService;
