@@ -3,16 +3,15 @@ using DMA_BLL.Interfaces;
 using DMA_DAL;
 using DMA_DAL.Repos;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions; // This namespace is required for UseMySQL
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MySQL connection string
 var connectionString = builder.Configuration.GetConnectionString("MySQLConnection");
 
-// Configure the DbContext to use MySQL with Oracle's provider
+// Configure the DbContext to use MySQL with Pomelo
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseMySQL(connectionString));
+	options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Register repository interfaces and implementations
 builder.Services.AddScoped<IDishRepos, DishRepos>();
