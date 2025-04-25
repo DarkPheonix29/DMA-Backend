@@ -7,7 +7,7 @@ public class Order
 	public int OrderId { get; set; }
 
 	[Required]
-	public string CustomerName { get; set; }
+	public int TableId { get; set; }
 
 	[Required]
 	public TimeOnly OrderTime { get; set; }

@@ -22,15 +22,23 @@ namespace DMA_DAL
 
 			// Define relationships and foreign keys
 
+			// OrderedItem -> Order
 			modelBuilder.Entity<OrderedItem>()
-				.HasOne(oi => oi.Order)  // Specifies the Order navigation property
-				.WithMany(o => o.OrderItems)  // Specifies the collection of OrderItems in Order
-				.HasForeignKey(oi => oi.OrderId);  // Foreign key for OrderId in OrderItem
+				.HasOne(oi => oi.Order)
+				.WithMany(o => o.OrderItems)
+				.HasForeignKey(oi => oi.OrderId);
 
+			// OrderedItem -> Dish
 			modelBuilder.Entity<OrderedItem>()
-				.HasOne(oi => oi.Dish)  // Specifies the Dish navigation property
-				.WithMany()  // No reverse navigation property for Dish in OrderItem
-				.HasForeignKey(oi => oi.DishId);  // Foreign key for DishId in OrderItem
+				.HasOne(oi => oi.Dish)
+				.WithMany()
+				.HasForeignKey(oi => oi.DishId);
+
+			// Order -> Table
+			modelBuilder.Entity<Order>()
+				.HasOne<Table>()
+				.WithMany()
+				.HasForeignKey(o => o.TableId);
 		}
 	}
 }
