@@ -12,7 +12,7 @@ namespace DMA_DAL.Repos
 		{
 			var table = new Table
 			{
-				Id = _nextId++,
+				TableId = _nextId++,
 				Name = name
 			};
 			_tables.Add(table);

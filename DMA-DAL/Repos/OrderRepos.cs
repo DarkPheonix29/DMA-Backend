@@ -19,7 +19,6 @@ namespace DMA_DAL.Repos
 		{
 			var order = new Order
 			{
-				CustomerName = customerName,
 				OrderTime = TimeOnly.MinValue,
 				OrderItems = orderItems,
 			};
@@ -38,14 +37,14 @@ namespace DMA_DAL.Repos
 				.FirstOrDefault(o => o.OrderId == orderId);
 		}
 
-		public List<Order> GetOrdersByCustomer(string customerName)
+	/*	public List<Order> GetOrdersByCustomer(string customerName)
 		{
 			return _context.Orders
 				.Where(o => o.CustomerName == customerName)
 				.Include(o => o.OrderItems)
 				.ThenInclude(oi => oi.Dish)
 				.ToList();
-		}
+		} */
 
 		public void UpdateOrderStatus(int orderId, string status)
 		{

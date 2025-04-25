@@ -7,7 +7,7 @@ namespace DMA_BLL.Interfaces
 	{
 		Order CreateOrder(string customerName, List<OrderedItem> orderItems);
 		Order GetOrderById(int orderId);
-		List<Order> GetOrdersByCustomer(string customerName);
+		//List<Order> GetOrdersByCustomer(string customerName);
 		void UpdateOrderStatus(int orderId, string status);
 		void AddOrderItem(int orderId, OrderedItem orderItem);
 	}
