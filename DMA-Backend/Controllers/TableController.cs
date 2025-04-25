@@ -1,4 +1,6 @@
 ﻿using DMA_BLL;
+using DMA_BLL.Interfaces;
+using DMA_BLL.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DMA_Backend
@@ -8,10 +10,12 @@ namespace DMA_Backend
 	public class TableController : ControllerBase
 	{
 		private readonly TableServices _tableService;
+		private readonly ITableRepos _tableRepos;
 
-		public TableController(TableServices tableService)
+		public TableController(TableServices tableService,ITableRepos tableRepos)
 		{
 			_tableService = tableService ?? throw new ArgumentNullException(nameof(tableService));
+			_tableRepos = tableRepos;
 		}
 
 		[HttpPost("create")]
@@ -30,6 +34,13 @@ namespace DMA_Backend
 				Table = table,
 				QrCode = Convert.ToBase64String(qrCodeImage)
 			});
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Table>>> GetAllTables()
+		{
+			var tables = await _tableRepos.GetAllTablesAsync();
+			return Ok(tables);
 		}
 
 		[HttpGet("{code}/qrcode")]

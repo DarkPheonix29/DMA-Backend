@@ -31,9 +31,16 @@ namespace DMA_Backend.Controllers
 				});
 			}
 
-			var order = _orderRepos.CreateOrder(orderRequest.CustomerName, orderItems);
+			var order = _orderRepos.CreateOrder(orderRequest.TableId, orderItems);
 
 			return Ok(order);
+		}
+
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
+		{
+			var dishes = await _orderRepos.GetAllOrdersAsync();
+			return Ok(dishes);
 		}
 
 		// Get an order by ID
@@ -58,7 +65,7 @@ namespace DMA_Backend.Controllers
 
 	public class OrderRequest
 	{
-		public string CustomerName { get; set; }
+		public int TableId { get; set; }
 		public List<OrderItemRequest> Items { get; set; }
 	}
 

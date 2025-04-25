@@ -15,10 +15,11 @@ namespace DMA_DAL.Repos
 			_context = context;
 		}
 
-		public Order CreateOrder(string customerName, List<OrderedItem> orderItems)
+		public Order CreateOrder(int tableId, List<OrderedItem> orderItems)
 		{
 			var order = new Order
 			{
+				TableId = tableId,
 				OrderTime = TimeOnly.MinValue,
 				OrderItems = orderItems,
 			};
@@ -29,6 +30,10 @@ namespace DMA_DAL.Repos
 			return order;
 		}
 
+		public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+		{
+			return await _context.Orders.ToListAsync();
+		}
 		public Order GetOrderById(int orderId)
 		{
 			return _context.Orders

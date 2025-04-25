@@ -5,7 +5,8 @@ namespace DMA_BLL.Interfaces
 {
 	public interface IOrderRepos
 	{
-		Order CreateOrder(string customerName, List<OrderedItem> orderItems);
+		Order CreateOrder(int tableId, List<OrderedItem> orderItems);
+		Task<IEnumerable<Order>> GetAllOrdersAsync();
 		Order GetOrderById(int orderId);
 		//List<Order> GetOrdersByCustomer(string customerName);
 		void UpdateOrderStatus(int orderId, string status);
