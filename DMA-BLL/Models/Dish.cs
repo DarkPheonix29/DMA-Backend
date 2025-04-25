@@ -6,6 +6,8 @@ namespace DMA_BLL.Models
 	{
 		[Key]
 		public int DishID { get; set; }
+		public string Category { get; set; }
+		public string Allergens { get; set; }
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public decimal Price { get; set; }
