@@ -36,7 +36,7 @@ namespace DMA_Backend.Controllers
 			return Ok(order);
 		}
 
-		[HttpGet]
+		[HttpGet("all-orders")]
 		public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
 		{
 			var dishes = await _orderRepos.GetAllOrdersAsync();
