@@ -2,6 +2,8 @@
 using DMA_BLL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
 
 namespace DMA_Backend.Controllers
 {
@@ -10,28 +12,37 @@ namespace DMA_Backend.Controllers
 	public class OrderController : ControllerBase
 	{
 		private readonly IOrderRepos _orderRepos;
+		private readonly IDishRepos _dishRepos;
 
-		public OrderController(IOrderRepos orderRepos)
+		public OrderController(IOrderRepos orderRepos, IDishRepos dishRepos)
 		{
 			_orderRepos = orderRepos;
+			_dishRepos = dishRepos;
 		}
 
-		// Create a new order
 		[HttpPost("create")]
-		public IActionResult CreateOrder([FromBody] OrderRequest orderRequest)
+		public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
 		{
 			var orderItems = new List<OrderedItem>();
+			decimal totalAmount = 0;
+
 			foreach (var item in orderRequest.Items)
 			{
-				var dish = new Dish { DishID = item.DishId, Price = item.Price }; // In a real scenario, fetch the Dish from DB
+				var dish = await _dishRepos.GetDishByIdAsync(item.DishId);
+				if (dish == null)
+					return NotFound($"Dish with ID {item.DishId} not found.");
+
+				totalAmount += dish.Price * item.Quantity;
+
 				orderItems.Add(new OrderedItem
 				{
 					DishId = dish.DishID,
 					Quantity = item.Quantity,
+					DishName = dish.Name // Store only the name of the dish
 				});
 			}
 
-			var order = _orderRepos.CreateOrder(orderRequest.TableId, orderItems);
+			var order = await _orderRepos.CreateOrderAsync(orderRequest.TableId, orderItems, totalAmount);
 
 			return Ok(order);
 		}
@@ -39,8 +50,8 @@ namespace DMA_Backend.Controllers
 		[HttpGet("all-orders")]
 		public async Task<ActionResult<IEnumerable<Order>>> GetAllOrders()
 		{
-			var dishes = await _orderRepos.GetAllOrdersAsync();
-			return Ok(dishes);
+			var orders = await _orderRepos.GetAllOrdersAsync();
+			return Ok(orders);
 		}
 
 		[HttpGet("all-ordered-items")]
@@ -50,7 +61,6 @@ namespace DMA_Backend.Controllers
 			return Ok(orderedItems);
 		}
 
-		// Get an order by ID
 		[HttpGet("{orderId}")]
 		public IActionResult GetOrder(int orderId)
 		{
@@ -61,7 +71,6 @@ namespace DMA_Backend.Controllers
 			return Ok(order);
 		}
 
-		// Update order status
 		[HttpPut("{orderId}/status")]
 		public IActionResult UpdateOrderStatus(int orderId, [FromBody] string status)
 		{
@@ -80,6 +89,5 @@ namespace DMA_Backend.Controllers
 	{
 		public int DishId { get; set; }
 		public int Quantity { get; set; }
-		public decimal Price { get; set; }
 	}
 }

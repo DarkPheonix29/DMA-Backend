@@ -1,78 +1,78 @@
 ﻿using DMA_BLL.Interfaces;
-using DMA_BLL.Models;
+using DMA_DAL;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+using DMA_BLL.Models;
 
-namespace DMA_DAL.Repos
+public class OrderRepos : IOrderRepos
 {
-	public class OrderRepos : IOrderRepos
+	private readonly ApplicationDbContext _context;
+
+	public OrderRepos(ApplicationDbContext context)
 	{
-		private readonly ApplicationDbContext _context;
+		_context = context;
+	}
 
-		public OrderRepos(ApplicationDbContext context)
+	public async Task<Order> CreateOrderAsync(int tableId, List<OrderedItem> orderItems, decimal totalAmount)
+	{
+		var order = new Order
 		{
-			_context = context;
-		}
+			TableId = tableId,
+			OrderTime = TimeOnly.FromDateTime(DateTime.Now),
+			TotalAmount = totalAmount,
+			OrderItems = orderItems
+		};
 
-		public Order CreateOrder(int tableId, List<OrderedItem> orderItems)
-		{
-			var order = new Order
+		_context.Orders.Add(order);
+		await _context.SaveChangesAsync();
+
+		return order;
+	}
+
+	public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+	{
+		return await _context.Orders.ToListAsync();
+	}
+
+	public async Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync()
+	{
+		return await _context.OrderItems
+			.Include(oi => oi.Dish) // Ensure Dish is included to access Dish.Name
+			.Select(oi => new OrderedItem
 			{
-				TableId = tableId,
-				OrderTime = TimeOnly.MinValue,
-				OrderItems = orderItems,
-			};
+				OrderItemId = oi.OrderItemId,
+				OrderId = oi.OrderId,
+				DishId = oi.DishId,
+				Quantity = oi.Quantity,
+				DishName = oi.Dish.Name // Only set the DishName
+			})
+			.ToListAsync();
+	}
 
-			_context.Orders.Add(order);
+	public Order GetOrderById(int orderId)
+	{
+		return _context.Orders
+			.Include(o => o.OrderItems)
+			.ThenInclude(oi => oi.Dish)
+			.FirstOrDefault(o => o.OrderId == orderId);
+	}
+
+	public void UpdateOrderStatus(int orderId, string status)
+	{
+		var order = _context.Orders.Find(orderId);
+		if (order != null)
+		{
+			order.Status = status;
 			_context.SaveChanges();
-
-			return order;
 		}
+	}
 
-		public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+	public void AddOrderItem(int orderId, OrderedItem orderItem)
+	{
+		var order = _context.Orders.Find(orderId);
+		if (order != null)
 		{
-			return await _context.Orders.ToListAsync();
-		}
-		public async Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync()
-		{
-			return await _context.OrderItems.ToListAsync();
-		}
-		public Order GetOrderById(int orderId)
-		{
-			return _context.Orders
-				.Include(o => o.OrderItems)
-				.ThenInclude(oi => oi.Dish)
-				.FirstOrDefault(o => o.OrderId == orderId);
-		}
-
-	/*	public List<Order> GetOrdersByCustomer(string customerName)
-		{
-			return _context.Orders
-				.Where(o => o.CustomerName == customerName)
-				.Include(o => o.OrderItems)
-				.ThenInclude(oi => oi.Dish)
-				.ToList();
-		} */
-
-		public void UpdateOrderStatus(int orderId, string status)
-		{
-			var order = _context.Orders.Find(orderId);
-			if (order != null)
-			{
-				order.Status = status;
-				_context.SaveChanges();
-			}
-		}
-
-		public void AddOrderItem(int orderId, OrderedItem orderItem)
-		{
-			var order = _context.Orders.Find(orderId);
-			if (order != null)
-			{
-				order.OrderItems.Add(orderItem);
-				_context.SaveChanges();
-			}
+			order.OrderItems.Add(orderItem);
+			_context.SaveChanges();
 		}
 	}
 }

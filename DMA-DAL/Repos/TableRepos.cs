@@ -6,8 +6,6 @@ namespace DMA_DAL.Repos
 {
 	public class TableRepos : ITableRepos
 	{
-		private static readonly List<Table> _tables = new();
-		private static int _nextId = 1;
 		private readonly ApplicationDbContext _context;
 
 		public TableRepos(ApplicationDbContext context)
@@ -15,24 +13,28 @@ namespace DMA_DAL.Repos
 			_context = context;
 		}
 
-		public Task<Table> CreateTableAsync(string name)
+		public async Task<Table> CreateTableAsync(string name)
 		{
 			var table = new Table
 			{
-				TableId = _nextId++,
-				Name = name
+				Name = name,
+				UniqueCode = Guid.NewGuid().ToString() // assuming you want a unique code
 			};
-			_tables.Add(table);
-			return Task.FromResult(table);
+
+			_context.Tables.Add(table);
+			await _context.SaveChangesAsync();
+
+			return table;
 		}
+
 		public async Task<IEnumerable<Table>> GetAllTablesAsync()
 		{
 			return await _context.Tables.ToListAsync();
 		}
-		public Task<Table?> GetTableByCodeAsync(string code)
+		public async Task<Table?> GetTableByCodeAsync(string code)
 		{
-			var table = _tables.FirstOrDefault(t => t.UniqueCode == code);
-			return Task.FromResult(table);
+			return await _context.Tables.FirstOrDefaultAsync(t => t.UniqueCode == code);
 		}
+
 	}
 }

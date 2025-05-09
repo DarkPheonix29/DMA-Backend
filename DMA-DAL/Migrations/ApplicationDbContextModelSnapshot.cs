@@ -117,6 +117,10 @@ namespace DMA_DAL.Migrations
                     b.Property<int>("DishId")
                         .HasColumnType("int");
 
+                    b.Property<string>("DishName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
