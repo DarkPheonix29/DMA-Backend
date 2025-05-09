@@ -11,5 +11,7 @@ namespace DMA_BLL.Interfaces
 		//List<Order> GetOrdersByCustomer(string customerName);
 		void UpdateOrderStatus(int orderId, string status);
 		void AddOrderItem(int orderId, OrderedItem orderItem);
+
+		Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync();
 	}
 }

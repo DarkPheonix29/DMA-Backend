@@ -43,6 +43,13 @@ namespace DMA_Backend.Controllers
 			return Ok(dishes);
 		}
 
+		[HttpGet("all-ordered-items")]
+		public async Task<ActionResult<IEnumerable<OrderedItem>>> GetAllOrderedItems()
+		{
+			var orderedItems = await _orderRepos.GetAllOrderedItemsAsync();
+			return Ok(orderedItems);
+		}
+
 		// Get an order by ID
 		[HttpGet("{orderId}")]
 		public IActionResult GetOrder(int orderId)
