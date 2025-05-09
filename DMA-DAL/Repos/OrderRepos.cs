@@ -34,6 +34,10 @@ namespace DMA_DAL.Repos
 		{
 			return await _context.Orders.ToListAsync();
 		}
+		public async Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync()
+		{
+			return await _context.OrderItems.ToListAsync();
+		}
 		public Order GetOrderById(int orderId)
 		{
 			return _context.Orders
