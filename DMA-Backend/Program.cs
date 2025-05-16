@@ -17,6 +17,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IDishRepos, DishRepos>();
 builder.Services.AddScoped<ITableRepos, TableRepos>();
 builder.Services.AddScoped<IOrderRepos, OrderRepos>();
+builder.Services.AddScoped<IAllergenRepos, AllergenRepos>();
+builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
 
 // Register BLL services
 builder.Services.AddScoped<TableServices>();
