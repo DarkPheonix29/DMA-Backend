@@ -16,11 +16,22 @@ namespace DMA_DAL
 		public DbSet<Order> Orders { get; set; }
 		public DbSet<OrderedItem> OrderItems { get; set; }
 
+		public DbSet<Allergen> Allergens { get; set; }
+		public DbSet<Category> Categories { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
-			// Define relationships and foreign keys
+			// Many-to-many: Dish <-> Category
+			modelBuilder.Entity<Dish>()
+				.HasMany(d => d.Categories)
+				.WithMany(c => c.Dishes);
+
+			// Many-to-many: Dish <-> Allergen
+			modelBuilder.Entity<Dish>()
+				.HasMany(d => d.Allergens)
+				.WithMany(a => a.Dishes);
 
 			// OrderedItem -> Order
 			modelBuilder.Entity<OrderedItem>()
@@ -40,5 +51,6 @@ namespace DMA_DAL
 				.WithMany()
 				.HasForeignKey(o => o.TableId);
 		}
+
 	}
 }
