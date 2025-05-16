@@ -14,5 +14,8 @@ namespace DMA_BLL.Interfaces
 		Task<Dish?> GetDishByIdAsync(int id); // Nullable return type
 		Task<bool> UpdateDishAsync(Dish dish);
 		Task<bool> DeleteDishAsync(int id);
+		Task<List<Category>> GetCategoriesByIdsAsync(List<int> ids);
+		Task<List<Allergen>> GetAllergensByIdsAsync(List<int> ids);
+
 	}
 }

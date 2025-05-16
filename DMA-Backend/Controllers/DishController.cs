@@ -19,11 +19,24 @@ namespace DMA_API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Dish>>> GetAllDishes()
+		public async Task<ActionResult<IEnumerable<DishResponseDto>>> GetAllDishes()
 		{
 			var dishes = await _dishRepository.GetAllDishesAsync();
-			return Ok(dishes);
+
+			var dtoList = dishes.Select(d => new DishResponseDto
+			{
+				DishID = d.DishID,
+				Name = d.Name,
+				Description = d.Description,
+				Price = d.Price,
+				IsAvailable = d.IsAvailable,
+				Categories = d.Categories.Select(c => c.Name).ToList(),
+				Allergens = d.Allergens.Select(a => a.Name).ToList()
+			});
+
+			return Ok(dtoList);
 		}
+
 
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Dish>> GetDishById(int id)
@@ -36,13 +49,36 @@ namespace DMA_API.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Dish>> CreateDish(Dish dish)
+		public async Task<ActionResult<DishResponseDto>> CreateDish([FromBody] CreateDishDto dto)
 		{
-			if (dish == null)
-				return BadRequest(new { message = "Invalid dish data" });
+			// Get related entities
+			var categories = await _dishRepository.GetCategoriesByIdsAsync(dto.CategoryIds);
+			var allergens = await _dishRepository.GetAllergensByIdsAsync(dto.AllergenIds);
+
+			var dish = new Dish
+			{
+				Name = dto.Name,
+				Description = dto.Description,
+				Price = dto.Price,
+				IsAvailable = dto.IsAvailable,
+				Categories = categories,
+				Allergens = allergens
+			};
 
 			await _dishRepository.AddDishAsync(dish);
-			return CreatedAtAction(nameof(GetDishById), new { id = dish.DishID }, dish);
+
+			var response = new DishResponseDto
+			{
+				DishID = dish.DishID,
+				Name = dish.Name,
+				Description = dish.Description,
+				Price = dish.Price,
+				IsAvailable = dish.IsAvailable,
+				Categories = categories.Select(c => c.Name).ToList(),
+				Allergens = allergens.Select(a => a.Name).ToList()
+			};
+
+			return CreatedAtAction(nameof(GetDishById), new { id = dish.DishID }, response);
 		}
 
 		[HttpPut("{id}")]
@@ -68,4 +104,24 @@ namespace DMA_API.Controllers
 			return NoContent();
 		}
 	}
+}
+public class CreateDishDto
+{
+	public string Name { get; set; }
+	public string Description { get; set; }
+	public decimal Price { get; set; }
+	public bool IsAvailable { get; set; }
+	public List<int> CategoryIds { get; set; }
+	public List<int> AllergenIds { get; set; }
+}
+public class DishResponseDto
+{
+	public int DishID { get; set; }
+	public string Name { get; set; }
+	public string Description { get; set; }
+	public decimal Price { get; set; }
+	public bool IsAvailable { get; set; }
+
+	public List<string> Categories { get; set; }
+	public List<string> Allergens { get; set; }
 }

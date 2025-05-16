@@ -24,7 +24,10 @@ namespace DMA_DAL.Repos
 
 		public async Task<IEnumerable<Dish>> GetAllDishesAsync()
 		{
-			return await _context.Dishes.ToListAsync();
+			return await _context.Dishes
+				.Include(d => d.Categories) // eager load categories
+				.Include(d => d.Allergens)  // eager load allergens
+				.ToListAsync();
 		}
 
 		public async Task<Dish?> GetDishByIdAsync(int id) // Nullable return type
@@ -51,5 +54,15 @@ namespace DMA_DAL.Repos
 			await _context.SaveChangesAsync();
 			return true;
 		}
+		public async Task<List<Category>> GetCategoriesByIdsAsync(List<int> ids)
+		{
+			return await _context.Categories.Where(c => ids.Contains(c.CategoryId)).ToListAsync();
+		}
+
+		public async Task<List<Allergen>> GetAllergensByIdsAsync(List<int> ids)
+		{
+			return await _context.Allergens.Where(a => ids.Contains(a.AllergenId)).ToListAsync();
+		}
+
 	}
 }
