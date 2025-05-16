@@ -30,8 +30,12 @@ public class OrderRepos : IOrderRepos
 
 	public async Task<IEnumerable<Order>> GetAllOrdersAsync()
 	{
-		return await _context.Orders.ToListAsync();
+		return await _context.Orders
+			.Include(o => o.OrderItems)
+			.ThenInclude(oi => oi.Dish)
+			.ToListAsync();
 	}
+
 
 	public async Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync()
 	{
