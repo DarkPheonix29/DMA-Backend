@@ -1,15 +1,50 @@
+using DMA_BLL;
+using DMA_BLL.Interfaces;
+using DMA_DAL;
+using DMA_DAL.Repos;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add MySQL connection string
+var connectionString = builder.Configuration.GetConnectionString("MySQLConnection");
 
+// Configure the DbContext to use MySQL with Pomelo
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Register repository interfaces and implementations
+builder.Services.AddScoped<IDishRepos, DishRepos>();
+builder.Services.AddScoped<ITableRepos, TableRepos>();
+builder.Services.AddScoped<IOrderRepos, OrderRepos>();
+builder.Services.AddScoped<IAllergenRepos, AllergenRepos>();
+builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
+
+// Register BLL services
+builder.Services.AddScoped<TableServices>();
+builder.Services.AddSingleton<QrCodeService>();
+
+// Add controllers and Swagger
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:50623",
+                "http://localhost:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,8 +53,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowFrontend");
+
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
