@@ -2,6 +2,7 @@ using DMA_BLL;
 using DMA_BLL.Interfaces;
 using DMA_DAL;
 using DMA_DAL.Repos;
+using DMA_Backend.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,8 @@ builder.Services.AddScoped<IOrderRepos, OrderRepos>();
 builder.Services.AddScoped<IAllergenRepos, AllergenRepos>();
 builder.Services.AddScoped<ICategoryRepos, CategoryRepos>();
 
+builder.Services.AddSignalR();
+
 // Register BLL services
 builder.Services.AddScoped<TableServices>();
 builder.Services.AddSingleton<QrCodeService>();
@@ -33,14 +36,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:50623",
-                "http://localhost:5173"
-            )
+        policy.WithOrigins("https://localhost:50623")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
+
 
 var app = builder.Build();
 
@@ -52,9 +54,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowFrontend");
-
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<OrderHub>("/orderhub");
 app.Run();

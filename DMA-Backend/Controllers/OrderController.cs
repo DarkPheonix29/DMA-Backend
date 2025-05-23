@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using DMA_Backend.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace DMA_Backend.Controllers
 {
@@ -13,11 +15,13 @@ namespace DMA_Backend.Controllers
 	{
 		private readonly IOrderRepos _orderRepos;
 		private readonly IDishRepos _dishRepos;
+		private readonly IHubContext<OrderHub> _hubContext;
 
-		public OrderController(IOrderRepos orderRepos, IDishRepos dishRepos)
+		public OrderController(IOrderRepos orderRepos, IDishRepos dishRepos, IHubContext<OrderHub> hubContext)
 		{
 			_orderRepos = orderRepos;
 			_dishRepos = dishRepos;
+			_hubContext = hubContext;
 		}
 
 		[HttpPost("create")]
@@ -43,6 +47,8 @@ namespace DMA_Backend.Controllers
 			}
 
 			var order = await _orderRepos.CreateOrderAsync(orderRequest.TableId, orderItems, totalAmount);
+			
+			await _hubContext.Clients.All.SendAsync("ReceiveOrder", order);
 
 			return Ok(order);
 		}
