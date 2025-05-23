@@ -32,8 +32,10 @@ namespace DMA_DAL.Repos
 
 		public async Task<Dish?> GetDishByIdAsync(int id) // Nullable return type
 		{
-			return await _context.Dishes.Include(d => d.Categories).Include(d => d.Allergens)
-				.FirstOrDefaultAsync(d => d.DishID == id);
+
+			var dish = await _context.Dishes.Include(d => d.Categories).Include(d => d.Allergens).FirstOrDefaultAsync(d => d.DishID == id);
+			return dish;
+
 		}
 
 		public async Task<bool> UpdateDishAsync(Dish dish)
