@@ -18,6 +18,14 @@ namespace DMA_Backend
 			_tableRepos = tableRepos;
 		}
 
+		[HttpGet("{uniqueCode}")]
+		public async Task<IActionResult> GetTableByCode(string uniqueCode)
+		{
+			var table = await _tableRepos.GetTableByCodeAsync(uniqueCode);
+			if (table == null) return NotFound();
+			return Ok(table);
+		}
+
 		[HttpPost("create")]
 		public async Task<IActionResult> CreateTable([FromBody] string name)
 		{
