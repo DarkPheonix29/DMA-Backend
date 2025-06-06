@@ -13,6 +13,6 @@ namespace DMA_BLL.Models
 		public string Name { get; set; }
 
 		[JsonIgnore]
-		public ICollection<Dish> Dishes { get; set; }
+		public ICollection<Dish> Dishes { get; set; } = new List<Dish>();
 	}
 }
