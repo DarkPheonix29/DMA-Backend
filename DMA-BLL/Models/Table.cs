@@ -10,5 +10,9 @@ namespace DMA_BLL.Models
 		[Required]
 		public string Name { get; set; } = string.Empty;
 		public string UniqueCode { get; set; } = Guid.NewGuid().ToString();
-	}
+
+        //al de gekoppelde orders
+        public List<Order> Orders { get; set; } = new();
+
+    }
 }

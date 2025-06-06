@@ -27,5 +27,10 @@ namespace DMA_BLL
 			string tableUrl = $"http://localhost:3000/menu/table/{table.UniqueCode}";
 			return _qrCodeService.GenerateQrCode(tableUrl);
 		}
-	}
+
+		public async Task MoveOrdersToTableAsync(int fromTableId, int toTableId)
+        {
+            await _tableRepository.MoveOrdersToTableAsync(fromTableId, toTableId);
+        }
+    }
 }

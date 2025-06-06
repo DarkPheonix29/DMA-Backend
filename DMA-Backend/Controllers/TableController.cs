@@ -64,5 +64,26 @@ namespace DMA_Backend
 
 			return File(qrCodeImage, "image/png");
 		}
-	}
+
+        [HttpPost("move-orders")]
+        public async Task<IActionResult> MoveOrders([FromBody] MoveOrdersRequest request)
+        {
+            //Hier wordt er gechekt of de request geldig is 
+            if (request.FromTableId == request.ToTableId)
+            {
+                return BadRequest("FromTableId and ToTableId cannot be the same.");
+            }
+
+            try
+            {
+                //Hier roep ik de service aan om de orders te verplaatsen
+                await _tableService.MoveOrdersToTableAsync(request.FromTableId, request.ToTableId);
+                return Ok(new { message = "Orders moved successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+        }
+    }
 }
