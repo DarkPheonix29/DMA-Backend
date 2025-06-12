@@ -78,10 +78,30 @@ namespace DMA_Backend.Controllers
 		}
 
 		[HttpPut("{orderId}/status")]
-		public IActionResult UpdateOrderStatus(int orderId, [FromBody] string status)
+		public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] string status)
 		{
+			// Update de status
 			_orderRepos.UpdateOrderStatus(orderId, status);
-			return Ok();
+
+			// Haal de order op, zodat we die kunnen doorsturen
+			var order = _orderRepos.GetOrderById(orderId);
+			if (order == null)
+				return NotFound();
+
+			// Als de order is gewijzigd, dan sturen we de order naar de client.
+			if (status.Equals("Done", StringComparison.OrdinalIgnoreCase) ||
+			    status.Equals("Bar Done", StringComparison.OrdinalIgnoreCase) ||
+			    status.Equals("Keuken Done", StringComparison.OrdinalIgnoreCase) ||
+				status.Equals("Bar PreDone", StringComparison.OrdinalIgnoreCase) ||
+				status.Equals("Keuken PreDone", StringComparison.OrdinalIgnoreCase)||
+				status.Equals("Waiting", StringComparison.OrdinalIgnoreCase) ||
+				status.Equals("Bar Finished", StringComparison.OrdinalIgnoreCase) ||
+				status.Equals("Keuken Finished", StringComparison.OrdinalIgnoreCase))
+			{
+				await _hubContext.Clients.All.SendAsync("ReceiveOrder", order);
+			}
+
+			return Ok(order);
 		}
 	}
 
