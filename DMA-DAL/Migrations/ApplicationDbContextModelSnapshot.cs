@@ -224,11 +224,13 @@ namespace DMA_DAL.Migrations
 
             modelBuilder.Entity("Order", b =>
                 {
-                    b.HasOne("DMA_BLL.Models.Table", null)
-                        .WithMany()
+                    b.HasOne("DMA_BLL.Models.Table", "Table")
+                        .WithMany("Orders")
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("OrderedItem", b =>
@@ -248,6 +250,11 @@ namespace DMA_DAL.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("DMA_BLL.Models.Table", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Order", b =>

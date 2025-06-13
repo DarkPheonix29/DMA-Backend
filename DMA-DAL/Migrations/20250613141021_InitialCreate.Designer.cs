@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMA_DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250509093011_InitialCreate")]
+    [Migration("20250613141021_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,70 @@ namespace DMA_DAL.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("AllergenDish", b =>
+                {
+                    b.Property<int>("AllergensAllergenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DishesDishID")
+                        .HasColumnType("int");
+
+                    b.HasKey("AllergensAllergenId", "DishesDishID");
+
+                    b.HasIndex("DishesDishID");
+
+                    b.ToTable("AllergenDish");
+                });
+
+            modelBuilder.Entity("CategoryDish", b =>
+                {
+                    b.Property<int>("CategoriesCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DishesDishID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoriesCategoryId", "DishesDishID");
+
+                    b.HasIndex("DishesDishID");
+
+                    b.ToTable("CategoryDish");
+                });
+
+            modelBuilder.Entity("DMA_BLL.Models.Allergen", b =>
+                {
+                    b.Property<int>("AllergenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AllergenId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("AllergenId");
+
+                    b.ToTable("Allergens");
+                });
+
+            modelBuilder.Entity("DMA_BLL.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoryId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+                });
+
             modelBuilder.Entity("DMA_BLL.Models.Dish", b =>
                 {
                     b.Property<int>("DishID")
@@ -32,14 +96,6 @@ namespace DMA_DAL.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("DishID"));
-
-                    b.Property<string>("Allergens")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -120,6 +176,10 @@ namespace DMA_DAL.Migrations
                     b.Property<int>("DishId")
                         .HasColumnType("int");
 
+                    b.Property<string>("DishName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
@@ -135,13 +195,45 @@ namespace DMA_DAL.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("AllergenDish", b =>
+                {
+                    b.HasOne("DMA_BLL.Models.Allergen", null)
+                        .WithMany()
+                        .HasForeignKey("AllergensAllergenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMA_BLL.Models.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("DishesDishID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CategoryDish", b =>
+                {
+                    b.HasOne("DMA_BLL.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMA_BLL.Models.Dish", null)
+                        .WithMany()
+                        .HasForeignKey("DishesDishID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Order", b =>
                 {
-                    b.HasOne("DMA_BLL.Models.Table", null)
-                        .WithMany()
+                    b.HasOne("DMA_BLL.Models.Table", "Table")
+                        .WithMany("Orders")
                         .HasForeignKey("TableId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Table");
                 });
 
             modelBuilder.Entity("OrderedItem", b =>
@@ -161,6 +253,11 @@ namespace DMA_DAL.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("DMA_BLL.Models.Table", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Order", b =>
