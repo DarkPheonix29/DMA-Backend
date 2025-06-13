@@ -17,12 +17,16 @@ namespace DMA_Backend
 			_tableService = tableService ?? throw new ArgumentNullException(nameof(tableService));
 			_tableRepos = tableRepos;
 		}
-
-		[HttpGet("{uniqueCode}")]
-		public async Task<IActionResult> GetTableByCode(string uniqueCode)
+		[HttpGet("{code}")]
+		public async Task<ActionResult<Table>> GetTableByCode(string code)
 		{
-			var table = await _tableRepos.GetTableByCodeAsync(uniqueCode);
-			if (table == null) return NotFound();
+			if (string.IsNullOrWhiteSpace(code))
+				return BadRequest("Code cannot be empty.");
+
+			var table = await _tableRepos.GetTableByCodeAsync(code);
+			if (table == null)
+				return NotFound();
+
 			return Ok(table);
 		}
 

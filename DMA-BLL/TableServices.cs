@@ -24,7 +24,7 @@ namespace DMA_BLL
 			var table = await _tableRepository.GetTableByCodeAsync(code);
 			if (table == null) return null!;
 
-			string tableUrl = $"http://localhost:3000/menu/table/{table.UniqueCode}";
+			string tableUrl = $"https://localhost:50623/menu/table/{table.UniqueCode}";
 			return _qrCodeService.GenerateQrCode(tableUrl);
 		}
 	}
