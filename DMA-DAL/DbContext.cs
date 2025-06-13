@@ -1,5 +1,6 @@
 ﻿using DMA_BLL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace DMA_DAL
 {
@@ -45,10 +46,10 @@ namespace DMA_DAL
 				.WithMany()
 				.HasForeignKey(oi => oi.DishId);
 
-			// Order -> Table
+			// Order -> Table (fix: use navigation property)
 			modelBuilder.Entity<Order>()
-				.HasOne<Table>()
-				.WithMany()
+				.HasOne(o => o.Table)
+				.WithMany(t => t.Orders)
 				.HasForeignKey(o => o.TableId);
 		}
 

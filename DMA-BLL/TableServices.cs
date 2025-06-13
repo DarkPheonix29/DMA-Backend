@@ -27,5 +27,15 @@ namespace DMA_BLL
 			string tableUrl = $"https://localhost:50623/menu/table/{table.UniqueCode}";
 			return _qrCodeService.GenerateQrCode(tableUrl);
 		}
-	}
+
+        public async Task MoveOrdersToTableAsync(int fromTableId, int toTableId)
+        {
+            if (fromTableId == toTableId)
+                throw new ArgumentException("Bron- en doeltafel mogen niet hetzelfde zijn.");
+
+            await _tableRepository.MoveOrdersToAnotherTableAsync(fromTableId, toTableId);
+        }
+
+
+    }
 }

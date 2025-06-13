@@ -36,5 +36,31 @@ namespace DMA_DAL.Repos
 			return await _context.Tables.FirstOrDefaultAsync(t => t.UniqueCode == code);
 		}
 
-	}
+        public async Task MoveOrdersToAnotherTableAsync(int fromTableId, int toTableId)
+        {
+            var fromTable = await _context.Tables.FindAsync(fromTableId);
+            var toTable = await _context.Tables.FindAsync(toTableId);
+
+            if (fromTable == null || toTable == null)
+                throw new ArgumentException("Een van de tafels bestaat niet.");
+
+            var ordersToMove = await _context.Orders
+                .Where(o => o.TableId == fromTableId)
+                .ToListAsync();
+
+            foreach (var order in ordersToMove)
+            {
+                order.TableId = toTableId;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task<Table?> GetTableByNameAsync(string name)
+        {
+            return await _context.Tables
+                .FirstOrDefaultAsync(t => t.Name == name);
+        }
+
+
+    }
 }

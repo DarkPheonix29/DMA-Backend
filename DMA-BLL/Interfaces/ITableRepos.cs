@@ -7,5 +7,8 @@ namespace DMA_BLL.Interfaces
 		Task<Table> CreateTableAsync(string name);
 		Task<Table?> GetTableByCodeAsync(string code);
 		Task<IEnumerable<Table>> GetAllTablesAsync();
-	}
+        Task MoveOrdersToAnotherTableAsync(int fromTableId, int toTableId);
+        Task<Table?> GetTableByNameAsync(string name);
+
+    }
 }
