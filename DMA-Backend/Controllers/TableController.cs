@@ -65,25 +65,22 @@ namespace DMA_Backend
 			return File(qrCodeImage, "image/png");
 		}
 
-        [HttpPost("move-orders")]
-        public async Task<IActionResult> MoveOrders([FromBody] MoveOrdersRequest request)
+        [HttpPost("move-orders/{fromTableId}")]
+        public async Task<IActionResult> MoveOrders(int fromTableId, [FromBody] int toTableId)
         {
-            //Hier wordt er gechekt of de request geldig is 
-            if (request.FromTableId == request.ToTableId)
-            {
-                return BadRequest("FromTableId and ToTableId cannot be the same.");
-            }
+            if (fromTableId == toTableId)
+                return BadRequest("Tafels mogen niet gelijk zijn.");
 
             try
             {
-                //Hier roep ik de service aan om de orders te verplaatsen
-                await _tableService.MoveOrdersToTableAsync(request.FromTableId, request.ToTableId);
-                return Ok(new { message = "Orders moved successfully." });
+                await _tableService.MoveOrdersToTableAsync(fromTableId, toTableId);
+                return Ok(new { message = "Orders succesvol verplaatst." });
             }
             catch (ArgumentException ex)
             {
                 return NotFound(new { error = ex.Message });
             }
         }
+
     }
 }

@@ -14,5 +14,7 @@ namespace DMA_BLL.Models
         //al de gekoppelde orders
         public List<Order> Orders { get; set; } = new();
 
+        [NotMapped] // Deze eigenschap wordt niet in de database opgeslagen
+        public int ToTableId { get; set; }
     }
 }

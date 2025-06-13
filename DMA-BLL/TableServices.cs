@@ -28,9 +28,14 @@ namespace DMA_BLL
 			return _qrCodeService.GenerateQrCode(tableUrl);
 		}
 
-		public async Task MoveOrdersToTableAsync(int fromTableId, int toTableId)
+        public async Task MoveOrdersToTableAsync(int fromTableId, int toTableId)
         {
-            await _tableRepository.MoveOrdersToTableAsync(fromTableId, toTableId);
+            if (fromTableId == toTableId)
+                throw new ArgumentException("Bron- en doeltafel mogen niet hetzelfde zijn.");
+
+            await _tableRepository.MoveOrdersToAnotherTableAsync(fromTableId, toTableId);
         }
+
+
     }
 }

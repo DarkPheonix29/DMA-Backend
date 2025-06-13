@@ -1,5 +1,6 @@
 ﻿using DMA_BLL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace DMA_DAL
 {
