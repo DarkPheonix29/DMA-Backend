@@ -103,7 +103,14 @@ namespace DMA_Backend.Controllers
 
 			return Ok(order);
 		}
-	}
+
+        [HttpDelete("{orderId}")]
+        public async Task<IActionResult> DeleteOrder(int orderId)
+        {
+            await _orderRepos.DeleteOrderAsync(orderId);
+            return NoContent();
+        }
+    }
 
 	public class OrderRequest
 	{

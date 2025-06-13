@@ -27,5 +27,11 @@ namespace DMA_BLL
 			string tableUrl = $"http://localhost:3000/menu/table/{table.UniqueCode}";
 			return _qrCodeService.GenerateQrCode(tableUrl);
 		}
-	}
+
+        //delete table by Id
+        public async Task<bool> DeleteTableAsync(int id)
+        {
+            return await _tableRepository.DeleteTableAsync(id);
+        }
+    }
 }

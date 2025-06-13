@@ -14,5 +14,7 @@ namespace DMA_BLL.Interfaces
 		void AddOrderItem(int orderId, OrderedItem orderItem);
 
 		Task<IEnumerable<OrderedItem>> GetAllOrderedItemsAsync();
-	}
+		Task DeleteOrderAsync(int orderId);
+
+    }
 }

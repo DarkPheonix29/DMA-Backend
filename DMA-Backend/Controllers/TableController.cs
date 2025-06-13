@@ -64,5 +64,16 @@ namespace DMA_Backend
 
 			return File(qrCodeImage, "image/png");
 		}
-	}
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTable(int id)
+        {
+            var result = await _tableService.DeleteTableAsync(id);
+            if (!result)
+            {
+                return NotFound("Table not found.");
+            }
+            return NoContent();
+        }
+    }
 }

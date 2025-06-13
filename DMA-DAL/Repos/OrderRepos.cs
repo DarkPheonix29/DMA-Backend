@@ -84,4 +84,15 @@ public class OrderRepos : IOrderRepos
 			_context.SaveChanges();
 		}
 	}
+
+    // Delete order by ID
+    public async Task DeleteOrderAsync(int orderId)
+    {
+        var order = await _context.Orders.FindAsync(orderId);
+        if (order != null)
+        {
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
+    }
 }

@@ -36,5 +36,15 @@ namespace DMA_DAL.Repos
 			return await _context.Tables.FirstOrDefaultAsync(t => t.UniqueCode == code);
 		}
 
-	}
+        //delete table by Id
+        public async Task<bool> DeleteTableAsync(int id)
+        {
+            var table = await _context.Tables.FindAsync(id);
+            if (table == null) return false;
+            _context.Tables.Remove(table);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+    }
 }
