@@ -3,6 +3,7 @@ using DMA_BLL.Interfaces;
 using DMA_DAL;
 using DMA_DAL.Repos;
 using Microsoft.EntityFrameworkCore;
+using DMA_Backend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ var connectionString = builder.Configuration.GetConnectionString("MySQLConnectio
 // Configure the DbContext to use MySQL with Pomelo
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddSignalR();
 
 // Register repository interfaces and implementations
 builder.Services.AddScoped<IDishRepos, DishRepos>();
@@ -34,11 +37,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:50623",
-                "http://localhost:5173"
+                "https://localhost:50623",
+                "https://localhost:5173"
             )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -57,4 +61,5 @@ app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<OrderHub>("/orderhub");
 app.Run();

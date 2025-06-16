@@ -49,6 +49,20 @@ namespace DMA_Backend.Controllers
 			var order = await _orderRepos.CreateOrderAsync(orderRequest.TableId, orderItems, totalAmount);
 			
 			await _hubContext.Clients.All.SendAsync("ReceiveOrder", order);
+			
+			string guestGroup = $"table-{order.TableId}";
+			Console.WriteLine($"➡Sending order update to group table-{order.TableId}");
+			await _hubContext.Clients.Group(guestGroup).SendAsync("ReceiveOrderUpdate", new
+			{
+				OrderId = order.OrderId,
+				TableId = order.TableId,
+				Status = order.Status,
+				Items = order.OrderItems.Select(i => new
+				{
+					DishName = i.DishName,
+					Quantity = i.Quantity
+				})
+			});
 
 			return Ok(order);
 		}
@@ -87,7 +101,7 @@ namespace DMA_Backend.Controllers
 			var order = _orderRepos.GetOrderById(orderId);
 			if (order == null)
 				return NotFound();
-
+			// 1. Bar/Keuken krijgt updates
 			// Als de order is gewijzigd, dan sturen we de order naar de client.
 			if (status.Equals("Done", StringComparison.OrdinalIgnoreCase) ||
 			    status.Equals("Bar Done", StringComparison.OrdinalIgnoreCase) ||
@@ -100,6 +114,20 @@ namespace DMA_Backend.Controllers
 			{
 				await _hubContext.Clients.All.SendAsync("ReceiveOrder", order);
 			}
+			
+			//2. Gasten krijgen updates op hun eigen tafel
+			string guestGroup = $"table-{order.TableId}";
+			await _hubContext.Clients.Group(guestGroup).SendAsync("ReceiveOrderUpdate", new
+			{
+				OrderId = order.OrderId,
+				TableId = order.TableId,
+				Status = order.Status,
+				Items = order.OrderItems.Select(i => new
+				{
+					DishName = i.DishName,
+					Quantity = i.Quantity
+				})
+			});
 
 			return Ok(order);
 		}
